@@ -1,26 +1,144 @@
 @import "tailwindcss";
+@custom-variant short (@media (max-height: 720px));
+/* =========================================================
+   THÈME M.ILA
+   Ciel · Papier · Encre · Pétrole · Accent pêche
+   ========================================================= */
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* Base */
+  --color-background: #fbfaf7;
+  --color-foreground: #002834;
+
+  /* Univers */
+  --color-sky: #168fe5;
+  --color-paper: #f8f1e4;
+  --color-surface: #f4efe7;
+  --color-ink: #0d0d0d;
+  --color-petrol: #002834;
+
+  /* Accents */
+  --color-peach: #f2a27e;
+  --color-gold: #c99a3f;
+  --color-sand: #d6bd8d;
+  --color-accent: var(--color-peach); /* ← change ici pour tester */
+
+  /* Utilitaires */
+  --color-border: rgba(0, 40, 52, 0.25);
+  --color-muted: rgba(0, 40, 52, 0.65);
+
+  /* Ombres dures */
+  --shadow-hard-sm: 3px 3px 0 var(--color-ink);
+  --shadow-hard: 5px 5px 0 var(--color-ink), 0 14px 30px rgba(0, 40, 52, 0.2);
+  --shadow-hard-lg:
+    8px 8px 0 var(--color-ink), 0 20px 40px rgba(0, 40, 52, 0.25);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --font-display: var(--font-display);
+  --font-sans: var(--font-sans);
+  --font-hand: var(--font-caveat);
+  --font-title: var(--font-bricolage);
+  /* Animations */
+  --animate-marquee: marquee 40s linear infinite;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
   }
 }
 
+/* =========================================================
+   UTILITAIRES MAISON
+   ========================================================= */
+
+/* ombre dure sur texte, proportionnelle à la taille */
+@utility text-hard {
+  text-shadow: 0.06em 0.06em 0 var(--color-ink);
+}
+
+@utility text-hard-sm {
+  text-shadow: 1.5px 1.5px 0 var(--color-ink);
+}
+
+@utility text-hard-accent {
+  text-shadow: 2px 2px 0 var(--color-accent);
+}
+
+/* contour encre derrière le remplissage */
+@utility text-outline {
+  -webkit-text-stroke: 2px var(--color-ink);
+  paint-order: stroke fill;
+}
+
+/* bouton brutaliste */
+@utility btn-brut {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--color-ink);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  box-shadow: var(--shadow-hard-sm);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 5px 5px 0 var(--color-ink);
+  }
+
+  &:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--color-ink);
+  }
+}
+
+/* =========================================================
+   BASE
+   ========================================================= */
+
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 100px;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-ink);
+}
+
+/* =========================================================
+   ACCESSIBILITÉ — MOUVEMENT RÉDUIT
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
