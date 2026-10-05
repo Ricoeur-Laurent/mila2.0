@@ -42,7 +42,8 @@ const bricolage = Bricolage_Grotesque({
    SEO
 ====================================================== */
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://mila2-0.vercel.app/";
 const SITE_NAME = "M.ila — Creative Lab";
 const DESCRIPTION =
   "M.ila crée des expériences qui ont du sens : communication, événementiel et accompagnement créatif pour les entreprises, mariages, danse et expériences privées pour les particuliers.";
