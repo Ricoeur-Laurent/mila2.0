@@ -32,6 +32,14 @@
   --shadow-hard: 5px 5px 0 var(--color-ink), 0 14px 30px rgba(0, 40, 52, 0.2);
   --shadow-hard-lg:
     8px 8px 0 var(--color-ink), 0 20px 40px rgba(0, 40, 52, 0.25);
+
+  --animate-draw: draw 0.45s ease-out forwards;
+
+  @keyframes draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
 }
 
 @theme inline {

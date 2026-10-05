@@ -164,7 +164,7 @@ export default function Hero() {
 
           <PostIt
             heart
-            className="absolute bottom-[-6%] left-[78%] z-10 w-[205px] rotate-[1deg] 2xl:w-[240px]"
+            className="absolute bottom-[-6%] left-[78%] z-10 w-[205px] rotate-[11deg] 2xl:w-[240px]"
             paperClassName="px-5 pb-8 pt-8"
             tapeClassName="left-1/2 top-[-13px] h-[28px] w-[74px] -translate-x-1/2 rotate-[4deg]"
           >

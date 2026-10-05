@@ -1,14 +1,16 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
+import Link from "next/link";
 
 import Polaroid from "@/components/ui/Polaroid";
 import PostIt from "@/components/ui/PostIt";
 import Tape from "@/components/ui/Tape";
+import ServiceModal, { type ServiceDetail } from "./ServiceModal";
 
 /* =====================================================
    DATA
+   ⚠️ textes des fiches provisoires — à valider avec Alie
 ====================================================== */
 
 type UniverseKey = "pro" | "part";
@@ -19,7 +21,7 @@ type Universe = {
   label: string;
   href: string;
   intro: string;
-  services: { label: string; id: string }[];
+  services: ServiceDetail[];
   photo: { src: string; alt: string; label: string };
   notes: { text: string; className: string }[];
 };
@@ -33,10 +35,50 @@ const UNIVERSES: Universe[] = [
     intro:
       "Communication, événementiel et accompagnement créatif pour les entreprises.",
     services: [
-      { label: "Communication & réseaux sociaux", id: "communication" },
-      { label: "Communication événementielle", id: "evenementiel" },
-      { label: "Accompagnement créatif", id: "accompagnement" },
-      { label: "Expériences d'entreprise", id: "experiences-entreprise" },
+      {
+        label: "Communication & réseaux sociaux",
+        id: "communication",
+        pitch: "Faire parler de vous, avec une voix qui vous ressemble.",
+        items: [
+          "Stratégie de communication",
+          "Réseaux sociaux & community management",
+          "Création de contenus",
+          "Ton et identité de marque",
+        ],
+      },
+      {
+        label: "Communication événementielle",
+        id: "evenementiel",
+        pitch: "Des événements d'entreprise dont on parle encore le lundi.",
+        items: [
+          "Conception et ambiance de l'événement",
+          "Lancements, soirées, séminaires",
+          "Coordination des prestataires",
+          "Présence le jour J",
+        ],
+      },
+      {
+        label: "Accompagnement créatif",
+        id: "accompagnement",
+        pitch: "Un regard extérieur et créatif pour faire avancer vos projets.",
+        items: [
+          "Ateliers et brainstormings",
+          "Direction artistique",
+          "Conseil ponctuel ou suivi régulier",
+          "Mise en forme de vos idées",
+        ],
+      },
+      {
+        label: "Expériences d'entreprise",
+        id: "experiences-entreprise",
+        pitch: "Rassembler vos équipes autour de moments qui ont du sens.",
+        items: [
+          "Team building créatif",
+          "Ateliers danse et cohésion",
+          "Événements internes",
+          "Expériences sur mesure",
+        ],
+      },
     ],
     photo: {
       src: "/images/pro.jpg",
@@ -61,10 +103,50 @@ const UNIVERSES: Universe[] = [
     href: "/particuliers",
     intro: "Mariages, danse et expériences privées pensées sur mesure.",
     services: [
-      { label: "Mariages & accompagnement", id: "mariages" },
-      { label: "Première danse & cours de danse", id: "danse" },
-      { label: "Dernière danse — obsèques", id: "derniere-danse" },
-      { label: "Expériences privées", id: "experiences" },
+      {
+        label: "Mariages & accompagnement",
+        id: "mariages",
+        pitch: "Un mariage qui vous ressemble, sans le stress.",
+        items: [
+          "Accompagnement complet ou à la carte",
+          "Idées, ambiance et déroulé",
+          "Coordination des prestataires",
+          "Présence le jour J",
+        ],
+      },
+      {
+        label: "Première danse & cours de danse",
+        id: "danse",
+        pitch: "Que votre première danse soit un souvenir, pas une épreuve.",
+        items: [
+          "Préparation de la première danse",
+          "Chorégraphie sur mesure",
+          "Cours particuliers ou en couple",
+          "Tous niveaux, même grands débutants",
+        ],
+      },
+      {
+        label: "Dernière danse — obsèques",
+        id: "derniere-danse",
+        pitch: "Un dernier hommage, porté par la danse et la musique.",
+        items: [
+          "Écoute et accompagnement des proches",
+          "Un moment pensé sur mesure",
+          "Une préparation en douceur",
+          "Dans le respect de chaque histoire",
+        ],
+      },
+      {
+        label: "Expériences privées",
+        id: "experiences",
+        pitch: "Anniversaires, demandes, surprises : on imagine l'inoubliable.",
+        items: [
+          "Demandes en mariage",
+          "Fêtes et anniversaires",
+          "Surprises sur mesure",
+          "Moments intimistes",
+        ],
+      },
     ],
     photo: {
       src: "/images/part.jpg",
@@ -95,17 +177,25 @@ const LINE = 32;
 const RULED = `linear-gradient(180deg, transparent ${LINE - 1}px, rgba(22,143,229,0.14) ${LINE - 1}px)`;
 
 /* =====================================================
-   LISTE DES PRESTATIONS (cliquables)
+   LISTE DES PRESTATIONS (ouvrent la fiche)
 ====================================================== */
 
-function ServiceList({ u }: { u: Universe }) {
+function ServiceList({
+  u,
+  onOpen,
+}: {
+  u: Universe;
+  onOpen: (index: number) => void;
+}) {
   return (
     <ol className="mt-8">
       {u.services.map((service, i) => (
         <li key={service.id}>
-          <Link
-            href={`${u.href}#${service.id}`}
-            className="group flex items-baseline gap-4 transition-all duration-200 hover:pl-1.5"
+          <button
+            type="button"
+            onClick={() => onOpen(i)}
+            aria-haspopup="dialog"
+            className="group flex w-full items-baseline gap-4 text-left transition-all duration-200 hover:pl-1.5"
           >
             <span className="w-5 shrink-0 translate-y-[5px] font-sans text-[10px] font-bold leading-[32px] tracking-[0.2em] text-ink/40">
               {String(i + 1).padStart(2, "0")}
@@ -115,13 +205,21 @@ function ServiceList({ u }: { u: Universe }) {
               {service.label}
             </span>
 
+            {/* petit "aperçu" manuscrit au survol */}
+            <span
+              aria-hidden
+              className="hidden translate-y-[5px] font-hand text-[19px] leading-[32px] text-sky opacity-0 transition-opacity duration-200 group-hover:opacity-100 lg:inline"
+            >
+              aperçu
+            </span>
+
             <span
               aria-hidden
               className="translate-y-[5px] leading-[32px] text-ink/35 transition-all duration-200 group-hover:translate-x-1 group-hover:text-accent"
             >
               →
             </span>
-          </Link>
+          </button>
         </li>
       ))}
     </ol>
@@ -170,10 +268,12 @@ function NotebookPage({
   u,
   side,
   active,
+  onOpenService,
 }: {
   u: Universe;
   side: "left" | "right";
   active: boolean;
+  onOpenService: (index: number) => void;
 }) {
   const isPart = u.key === "part";
 
@@ -244,7 +344,7 @@ function NotebookPage({
       </div>
 
       {/* prestations */}
-      <ServiceList u={u} />
+      <ServiceList u={u} onOpen={onOpenService} />
 
       {/* bas de page : bouton + photo (ordre inversé côté particuliers) */}
       <div
@@ -268,7 +368,7 @@ function NotebookPage({
 
         {isPart ? (
           // photo + post-it en haut à droite (ne cache pas la légende)
-          <div className="relative hidden shrink-0 lg:block xl:mr-[100px]">
+          <div className="relative hidden shrink-0 lg:block xl:mr-[112px]">
             <Polaroid
               src={u.photo.src}
               alt={u.photo.alt}
@@ -277,11 +377,11 @@ function NotebookPage({
             />
 
             <PostIt
-              className="absolute right-[-104px] top-[-6px] z-10 hidden w-[130px] rotate-[5deg] xl:block"
-              paperClassName="px-4 pb-5 pt-6"
+              className="absolute right-[-112px] top-[-6px] z-10 hidden w-[145px] rotate-[3deg] xl:block"
+              paperClassName="px-4 pb-6 pt-7"
               tapeClassName="left-1/2 top-[-10px] h-[20px] w-[54px] -translate-x-1/2 rotate-[-4deg]"
             >
-              <p className="text-center font-display text-[15px] italic leading-[1.2] text-petrol">
+              <p className="text-center font-display text-[17px] italic leading-[1.15] text-ink [-webkit-text-stroke:0.35px_currentColor]">
                 Chaque moment
                 <br />
                 mérite d&apos;être
@@ -309,6 +409,14 @@ function NotebookPage({
 
 export default function Universes() {
   const [active, setActive] = useState<UniverseKey>("pro");
+  const [modal, setModal] = useState<{
+    key: UniverseKey;
+    index: number;
+  } | null>(null);
+
+  const modalUniverse = modal
+    ? (UNIVERSES.find((u) => u.key === modal.key) ?? null)
+    : null;
 
   return (
     <section
@@ -421,11 +529,24 @@ export default function Universes() {
                 u={u}
                 side={i === 0 ? "left" : "right"}
                 active={active === u.key}
+                onOpenService={(index) => setModal({ key: u.key, index })}
               />
             ))}
           </div>
         </div>
       </div>
+
+      {/* fiche prestation */}
+      {modal && modalUniverse && (
+        <ServiceModal
+          universeLabel={modalUniverse.label}
+          universeHref={modalUniverse.href}
+          services={modalUniverse.services}
+          index={modal.index}
+          onClose={() => setModal(null)}
+          onNavigate={(index) => setModal({ key: modal.key, index })}
+        />
+      )}
     </section>
   );
 }
