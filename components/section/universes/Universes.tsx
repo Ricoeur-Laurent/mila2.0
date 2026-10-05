@@ -67,7 +67,7 @@ const UNIVERSES: Universe[] = [
       { label: "Expériences privées", id: "experiences" },
     ],
     photo: {
-      src: "/images/particulier.jpg",
+      src: "/images/part.jpg",
       alt: "Moment de vie accompagné par M.ila",
       label: "moments de vie",
     },
